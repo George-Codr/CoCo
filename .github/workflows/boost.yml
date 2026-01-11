@@ -82,6 +82,10 @@ jobs:
          TOOLCHAIN="$PREBUILT/$HOST_TAG"
          ls $TOOLCHAIN
          ls $TOOLCHAIN/bin
+         export CC="$TOOLCHAIN/bin/aarch64-linux-android${ANDROID_API}-clang"
+         export CXX="$TOOLCHAIN/bin/aarch64-linux-android${ANDROID_API}-clang++"
+         export STRIP="$TOOLCHAIN/bin/llvm-strip"
+         export RANLIB="$TOOLCHAIN/bin/llvm-ranlib"
          ls "$TOOLCHAIN/bin" | head -n 10   # sanity check
          cat > boost/user-config.jam <<EOF
          using clang : android
