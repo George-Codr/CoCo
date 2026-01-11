@@ -24,6 +24,5 @@ updates:
       - "team:infrastructure"
     assignees:
       - "senior-dev"
-    rebasing-strategy: "auto"
     allow:
       - dependency-type: "production"
