@@ -75,6 +75,8 @@ jobs:
          TOOLCHAIN="$NDK/toolchains/llvm/prebuilt/$HOST_TAG"
          ls "$TOOLCHAIN/bin" | head -n 10   # sanity check
          cat > boost/user-config.jam <<EOF
+         ls $TOOLCHAIN || true
+         ls $TOOLCHAIN/bin || true
          using clang : android
            : $TOOLCHAIN/bin/aarch64-linux-android${ANDROID_API}-clang++
            :
