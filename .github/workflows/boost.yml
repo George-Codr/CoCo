@@ -78,10 +78,10 @@ jobs:
          fi
          echo "Using NDK host tag: $HOST_TAG"
          TOOLCHAIN="$PREBUILT/$HOST_TAG"
-         ls "$TOOLCHAIN/bin" | head -n 10   # sanity check
-         cat > boost/user-config.jam <<EOF
          ls $TOOLCHAIN
          ls $TOOLCHAIN/bin
+         ls "$TOOLCHAIN/bin" | head -n 10   # sanity check
+         cat > boost/user-config.jam <<EOF
          using clang : android
            : $TOOLCHAIN/bin/aarch64-linux-android${ANDROID_API}-clang++
            :
