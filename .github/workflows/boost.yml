@@ -24,7 +24,9 @@ jobs:
       - name: Install host dependencies
         run: |
           brew update
-          brew install cmake wget ninja
+          brew install cmake wget ninja dpkg
+          which dpkg-deb
+          dpkg-deb --version
 
       - name: Check Java
         run: |
