@@ -50,12 +50,12 @@ jobs:
             "build-tools;35.0.0" \
             "ndk;27.3.13750724"
 
-      - name: Download Boost 1.90.0 (GitHub archive)
+      - name: Clone Boost 1.90.0 with submodules
         run: |
-          wget https://github.com/boostorg/boost/archive/refs/tags/boost-${BOOST_VERSION}.tar.gz \
-            -O boost-${BOOST_VERSION}.tar.gz
-          tar xf boost-${BOOST_VERSION}.tar.gz
-          mv boost-boost-${BOOST_VERSION} boost
+         git clone --branch boost-${BOOST_VERSION} --depth 1 https://github.com/boostorg/boost.git boost
+         cd boost
+         git submodule update --init --recursive
+
 
       - name: Bootstrap Boost
         run: |
