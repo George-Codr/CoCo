@@ -64,19 +64,24 @@ jobs:
 
       - name: Create toolchain config
         run: |
-         ARCH=$(uname -m)
-         if [ "$ARCH" = "arm64" ]; then
+         NDK="$ANDROID_HOME/ndk/${NDK_VERSION}"
+         PREBUILT="$NDK/toolchains/llvm/prebuilt"
+         echo "Available prebuilt toolchains:"
+         ls "$PREBUILT"
+         if [ -d "$PREBUILT/darwin-arm64" ]; then
            HOST_TAG=darwin-arm64
-         else
+         elif [ -d "$PREBUILT/darwin-x86_64" ]; then
            HOST_TAG=darwin-x86_64
+         else
+           echo "ERROR: No valid NDK host toolchain found!"
+           exit 1
          fi
          echo "Using NDK host tag: $HOST_TAG"
-         NDK="$ANDROID_HOME/ndk/${NDK_VERSION}"
-         TOOLCHAIN="$NDK/toolchains/llvm/prebuilt/$HOST_TAG"
+         TOOLCHAIN="$PREBUILT/$HOST_TAG"
          ls "$TOOLCHAIN/bin" | head -n 10   # sanity check
          cat > boost/user-config.jam <<EOF
-         ls $TOOLCHAIN || true
-         ls $TOOLCHAIN/bin || true
+         ls $TOOLCHAIN
+         ls $TOOLCHAIN/bin
          using clang : android
            : $TOOLCHAIN/bin/aarch64-linux-android${ANDROID_API}-clang++
            :
