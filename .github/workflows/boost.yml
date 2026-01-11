@@ -64,16 +64,25 @@ jobs:
 
       - name: Create toolchain config
         run: |
-          NDK="$ANDROID_HOME/ndk/${NDK_VERSION}"
-          cat > boost/user-config.jam <<EOF
-          using clang : android
-            : $NDK/toolchains/llvm/prebuilt/darwin-arm64/bin/aarch64-linux-android${ANDROID_API}-clang++
-            :
-            <archiver>$NDK/toolchains/llvm/prebuilt/darwin-arm64/bin/llvm-ar
-            <ranlib>$NDK/toolchains/llvm/prebuilt/darwin-arm64/bin/llvm-ranlib
-            <strip>$NDK/toolchains/llvm/prebuilt/darwin-arm64/bin/llvm-strip
-            ;
-          EOF
+         ARCH=$(uname -m)
+         if [ "$ARCH" = "arm64" ]; then
+           HOST_TAG=darwin-arm64
+         else
+           HOST_TAG=darwin-x86_64
+         fi
+         echo "Using NDK host tag: $HOST_TAG"
+         NDK="$ANDROID_HOME/ndk/${NDK_VERSION}"
+         TOOLCHAIN="$NDK/toolchains/llvm/prebuilt/$HOST_TAG"
+         ls "$TOOLCHAIN/bin" | head -n 10   # sanity check
+         cat > boost/user-config.jam <<EOF
+         using clang : android
+           : $TOOLCHAIN/bin/aarch64-linux-android${ANDROID_API}-clang++
+           :
+           <archiver>$TOOLCHAIN/bin/llvm-ar
+           <ranlib>$TOOLCHAIN/bin/llvm-ranlib
+           <strip>$TOOLCHAIN/bin/llvm-strip
+           ;
+         EOF
 
       - name: Build FULL Boost into Termux filesystem layout
         run: |
