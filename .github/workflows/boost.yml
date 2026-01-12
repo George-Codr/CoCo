@@ -5,6 +5,8 @@ on:
   push:
     branches: [ xer ]
 
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: macos-15
@@ -142,8 +144,14 @@ jobs:
         run: |
           dpkg-deb --build pkgroot boost-full-termux-aarch64.deb
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v6
+      - name: Create Release and upload .deb
+        uses: softprops/action-gh-release@v2
         with:
-          name: boost-1.90.0-termux-aarch64-deb
-          path: boost-full-termux-aarch64.deb
+          tag_name: v1.90.0-termux-aarch64
+          name: Boost 1.90.0 – Termux AArch64
+          body: |
+            Boost 1.90.0 build for Termux (AArch64).
+            Packaged as a Debian (.deb) file.
+          files: boost-full-termux-aarch64.deb
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
