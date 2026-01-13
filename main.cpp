@@ -2,11 +2,18 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
-#include <nlohmann/json.hpp>
 #include <string>
 #include <array>
 #include <cstdio>
+#include <ctime>
 #include <blake3.h>
+#include <boost/beast/core.hpp>
+#include <boost/beast/http.hpp>
+#include <boost/beast/version.hpp>
+#include <boost/asio/connect.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/ssl.hpp>
+#include <nlohmann/json.hpp>
 #if defined(_WIN32)
 #include <windows.h>
 #elif defined(__APPLE__)
@@ -15,8 +22,14 @@
 #elif defined(__linux__) || defined(__ANDROID__)
 #include <unistd.h>
 #endif
+
 using namespace std;
 using json = nlohmann::json;
+
+namespace beast = boost::beast;
+namespace http = beast::http;
+namespace net = boost::asio;
+using tcp = net::ip::tcp;
 
 string read_file(const string& path) {
     ifstream f(path, ios::binary);
@@ -98,7 +111,6 @@ string get_hwid() {
         char host[256]{};
         gethostname(host, sizeof(host));
         raw += host;
-        raw += to_string(getuid());
 #endif
         raw += to_string(static_cast<uint64_t>(time(nullptr)));
     }
@@ -122,11 +134,33 @@ string format_hwid(const string& data) {
     return to_hex(digest, 28);
 }
 
-string https_get(const string& host, const string& target);
+string https_get(const string& host, const string& target) {
+    net::io_context ioc;
+    net::ssl::context ctx(net::ssl::context::sslv23_client);
+    ctx.set_default_verify_paths();
+    tcp::resolver resolver(ioc);
+    beast::ssl_stream<beast::tcp_stream> stream(ioc, ctx);
+    auto const results = resolver.resolve(host, "443");
+    beast::get_lowest_layer(stream).connect(results);
+    stream.handshake(net::ssl::stream_base::client);
+    http::request<http::string_body> req{http::verb::get, target, 11};
+    req.set(http::field::host, host);
+    req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
+    req.set(http::field::cache_control, "no-store, no-cache, must-revalidate, max-age=0");
+    req.set(http::field::pragma, "no-cache");
+    http::write(stream, req);
+    beast::flat_buffer buffer;
+    http::response<http::string_body> res;
+    http::read(stream, buffer, res);
+    beast::error_code ec;
+    stream.shutdown(ec);
+    return res.body();
+}
 
 int main() {
     try {
-        string hwid = format_hwid(get_hwid());
+        string raw_hwid = get_hwid();
+        string hwid = format_hwid(raw_hwid);
         string target = "/api?key=" + hwid;
         string response = https_get("zromalu.vercel.app", target);
         json j = json::parse(response);
@@ -144,8 +178,9 @@ int main() {
         } else {
             cout << "Something Went Wrong\n";
         }
-    } catch (exception& e) {
+    } catch (const exception& e) {
         cerr << "Fatal error: " << e.what() << "\n";
+        return 1;
     }
     return 0;
 }
