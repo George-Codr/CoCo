@@ -4,9 +4,6 @@ project(auth_loader LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android")
-    set(CMAKE_CXX_COMPILER /usr/bin/clang++)
-endif()
 
 # ────────────────────────────────────────────────────────────────
 # Fetch BLAKE3 (C implementation) ── pinned to latest stable release
