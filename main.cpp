@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <array>
 #include <cstdio>
