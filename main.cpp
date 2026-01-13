@@ -15,6 +15,7 @@
 #include <unistd.h>
 #endif
 using namespace std;
+using json = nlohmann::json;
 
 string read_file(const string& path) {
     ifstream f(path, ios::binary);
