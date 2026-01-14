@@ -30,6 +30,7 @@ jobs:
         run: |
           cd build
           cmake --build . --config Release -- -j$(nproc)
+          ./auth
 
       - name: Upload executable
         uses: actions/upload-artifact@v6
