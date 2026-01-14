@@ -136,27 +136,42 @@ string format_hwid(const string& data) {
 
 string https_get(const string& host, const string& target) {
     net::io_context ioc;
-    net::ssl::context ctx(net::ssl::context::sslv23_client);
+    net::ssl::context ctx(net::ssl::context::tls_client);  // modern: tls_client instead of sslv23_client
     ctx.set_default_verify_paths();
+
     tcp::resolver resolver(ioc);
-    beast::ssl_stream<beast::tcp_stream> stream(ioc, ctx);
     auto const results = resolver.resolve(host, "443");
-    beast::get_lowest_layer(stream).connect(results);
+
+    // Use plain asio ssl::stream + beast tcp_stream wrapper
+    beast::tcp_stream tcp_stream(ioc);
+    tcp_stream.connect(results);
+
+    net::ssl::stream<beast::tcp_stream> stream(std::move(tcp_stream), ctx);
+
+    // Perform TLS handshake
     stream.handshake(net::ssl::stream_base::client);
+
+    // Prepare HTTP request
     http::request<http::string_body> req{http::verb::get, target, 11};
     req.set(http::field::host, host);
     req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
     req.set(http::field::cache_control, "no-store, no-cache, must-revalidate, max-age=0");
     req.set(http::field::pragma, "no-cache");
+
+    // Send request
     http::write(stream, req);
+
+    // Read response
     beast::flat_buffer buffer;
     http::response<http::string_body> res;
     http::read(stream, buffer, res);
+
+    // Graceful shutdown (ignore errors here for simplicity)
     beast::error_code ec;
     stream.shutdown(ec);
+
     return res.body();
 }
-
 int main() {
     try {
         string raw_hwid = get_hwid();
