@@ -48,11 +48,9 @@ jobs:
             boost \
             openssl \
             nlohmann-json
-  
+          ls /opt/homebrew/lib | grep boost_system
+          
 
-      # ────────────────────────────────────────────────────────────────
-      # Windows dependencies (vcpkg)
-      # ────────────────────────────────────────────────────────────────
       - name: Setup vcpkg (Windows)
         if: runner.os == 'Windows'
         uses: lukka/run-vcpkg@v11
