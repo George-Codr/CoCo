@@ -1,4 +1,4 @@
-name: C++ Build
+name: C++ Build (Multi-OS Parallel)
 
 on:
   push:
@@ -8,32 +8,95 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false                  # Continue even if one OS fails
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Install dependencies
+      # ────────────────────────────────────────────────────────────────
+      # Linux dependencies
+      # ────────────────────────────────────────────────────────────────
+      - name: Install dependencies (Ubuntu)
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake clang libboost-system-dev libssl-dev nlohmann-json3-dev
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            clang \
+            libboost-system-dev \
+            libssl-dev \
+            nlohmann-json3-dev
 
-      - name: Configure CMake
+      # ────────────────────────────────────────────────────────────────
+      # macOS dependencies (Homebrew)
+      # ────────────────────────────────────────────────────────────────
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
         run: |
-          rm -rf build
+          brew update
+          brew install \
+            cmake \
+            boost \
+            openssl \
+            nlohmann-json
+
+      # ────────────────────────────────────────────────────────────────
+      # Windows dependencies (vcpkg)
+      # ────────────────────────────────────────────────────────────────
+      - name: Setup vcpkg (Windows)
+        if: runner.os == 'Windows'
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgDirectory: ${{ runner.workspace }}/vcpkg
+
+      - name: Install dependencies via vcpkg (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          cd ${{ runner.workspace }}/vcpkg
+          ./vcpkg install boost-system:x64-windows openssl:x64-windows nlohmann-json:x64-windows --clean-after-build
+
+      # ────────────────────────────────────────────────────────────────
+      # CMake configure - platform-specific
+      # ────────────────────────────────────────────────────────────────
+      - name: Configure CMake (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release `
+                   -DCMAKE_TOOLCHAIN_FILE=${{ runner.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake `
+                   -DVCPKG_TARGET_TRIPLET=x64-windows
+
+      - name: Configure CMake (Unix-like: Linux + macOS)
+        if: runner.os != 'Windows'
+        run: |
+          rm -rf build || true
           mkdir -p build
           cd build
           cmake .. -DCMAKE_BUILD_TYPE=Release
 
+      # ────────────────────────────────────────────────────────────────
+      # Build (common for all platforms)
+      # ────────────────────────────────────────────────────────────────
       - name: Build
         run: |
           cd build
-          cmake --build . --config Release -- -j$(nproc)
-          ./auth
+          cmake --build . --config Release --parallel $(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
 
+      # ────────────────────────────────────────────────────────────────
+      # Upload artifact with OS-specific name
+      # ────────────────────────────────────────────────────────────────
       - name: Upload executable
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
-          name: auth_executable
-          path: build/auth
+          name: auth-${{ runner.os }}-${{ runner.arch }}
+          path: build/auth${{ runner.os == 'Windows' && '.exe' || '' }}
+          if-no-files-found: error
