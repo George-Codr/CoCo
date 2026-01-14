@@ -75,7 +75,7 @@ jobs:
                    -DCMAKE_TOOLCHAIN_FILE=${{ runner.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake `
                    -DVCPKG_TARGET_TRIPLET=x64-windows
 
-      - name: Configure CMake (Unix-like: Linux + macOS)
+      - name: Configure CMake
         if: runner.os != 'Windows'
         run: |
           rm -rf build || true
