@@ -48,7 +48,10 @@ jobs:
             boost \
             openssl \
             nlohmann-json
+          brew reinstall boost --build-from-source
+          brew link --overwrite boost
           ls /opt/homebrew/Cellar/boost/1.90.0/lib/ || true
+          ls /opt/homebrew/lib | grep boost_system || true
           
 
       - name: Setup vcpkg (Windows)
