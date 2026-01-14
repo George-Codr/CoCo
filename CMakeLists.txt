@@ -28,7 +28,7 @@ add_subdirectory(${blake3_SOURCE_DIR}/c ${blake3_BINARY_DIR}/c EXCLUDE_FROM_ALL)
 # ────────────────────────────────────────────────────────────────
 # Rest of your file remains the same
 # ────────────────────────────────────────────────────────────────
-find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
 find_package(nlohmann_json REQUIRED)
