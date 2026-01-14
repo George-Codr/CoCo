@@ -11,7 +11,6 @@ set(CMAKE_C_COMPILER_WORKS   TRUE CACHE INTERNAL "Bypass compiler test")
 set(CMAKE_CXX_COMPILER_WORKS TRUE CACHE INTERNAL "Bypass compiler test")
 
 # Optional: If you still see policy/deprecation warnings from FetchContent
-# cmake_policy(SET CMP0169 OLD)   # only if you see CMP0169 errors
 
 # ────────────────────────────────────────────────────────────────
 # Fetch BLAKE3
