@@ -95,13 +95,15 @@ jobs:
           rm -rf build || true
           mkdir build
           cd build
+          export CMAKE_PREFIX_PATH="/opt/homebrew"
+          export CMAKE_IGNORE_PATH="/opt/homebrew/lib/cmake/Boost-1.90.0"
           cmake .. \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DBoost_NO_BOOST_CMAKE=ON \
-            -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=FALSE \
-            -DBoost_DIR="" \
-            -DBoost_ROOT="/opt/homebrew" \
-            -DBOOST_ROOT="/opt/homebrew"
+           -DCMAKE_BUILD_TYPE=Release \
+           -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=FALSE \
+           -DBoost_NO_BOOST_CMAKE=ON \
+           -DBOOST_ROOT=/opt/homebrew \
+           -DBoost_ROOT=/opt/homebrew \
+           -DBoost_DIR=""
       
       # ────────────────────────────────────────────────────────────────
       # Build (common for all platforms)
