@@ -48,7 +48,7 @@ jobs:
             boost \
             openssl \
             nlohmann-json
-          ls /opt/homebrew/Cellar/boost/1.90.0/ || true
+          ls /opt/homebrew/Cellar/boost/1.90.0/lib/ || true
           
 
       - name: Setup vcpkg (Windows)
