@@ -79,7 +79,7 @@ jobs:
                    -DVCPKG_TARGET_TRIPLET=x64-windows
 
       - name: Configure CMake
-        if: runner.os != 'Windows'
+        if: runner.os == 'Linux'
         run: |
           rm -rf build || true
           mkdir -p build
@@ -89,6 +89,20 @@ jobs:
             -DBoost_NO_BOOST_CMAKE=ON \
             -DBoost_USE_STATIC_LIBS=OFF \
             -DBoost_USE_MULTITHREADED=ON
+      - name: Configure CMake (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          rm -rf build || true
+          mkdir build
+          cd build
+          cmake .. \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBoost_NO_BOOST_CMAKE=ON \
+            -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=FALSE \
+            -DBoost_DIR="" \
+            -DBoost_ROOT="/opt/homebrew" \
+            -DBOOST_ROOT="/opt/homebrew"
+      
       # ────────────────────────────────────────────────────────────────
       # Build (common for all platforms)
       # ────────────────────────────────────────────────────────────────
