@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
+cmake_policy(SET CMP0167 NEW)
 project(auth_loader LANGUAGES C CXX)   # ← Add C here! Critical for mixed C/C++ FetchContent
 
 # Force CMake to accept the compilers early (band-aid for corrupted detection)
