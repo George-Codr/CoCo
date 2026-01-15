@@ -24,7 +24,7 @@ updates:
     reviewers:
       - "team:infrastructure"
     assignees:
-      - "senior-dev"
+      - "George-Codr"
     allow:
       - dependency-type: "production"
 
@@ -52,6 +52,6 @@ updates:
     reviewers:
       - "team:infrastructure"
     assignees:
-      - "senior-dev"
+      - "George-Codr"
     allow:
       - dependency-type: "production"
