@@ -3,7 +3,7 @@
   "name": "auth-tool",
   "version-string": "1.0.0",
   "dependencies": [
-    "boost-system",
+    "boost",
     "openssl",
     "nlohmann-json"
   ]
