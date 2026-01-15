@@ -17,6 +17,12 @@ find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
 find_package(nlohmann_json REQUIRED)
 add_executable(auth main.cpp)
+if(APPLE)
+    target_link_libraries(auth PRIVATE
+        "-framework IOKit"
+        "-framework CoreFoundation"
+    )
+endif()
 target_link_libraries(auth PRIVATE Boost::boost OpenSSL::SSL OpenSSL::Crypto nlohmann_json::nlohmann_json Threads::Threads blake3)
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
 target_compile_options(auth PRIVATE -O3 -DNDEBUG)
