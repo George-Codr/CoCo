@@ -27,3 +27,31 @@ updates:
       - "senior-dev"
     allow:
       - dependency-type: "production"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    target-branch: "main"
+    schedule:
+      interval: daily
+      time: "05:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 15
+    pull-request-branch-name:
+      separator: "-"
+    commit-message:
+      prefix: "actions"
+      prefix-development: "chore(actions)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    groups:
+      all-actions:
+        patterns:
+          - "*"
+    reviewers:
+      - "team:infrastructure"
+    assignees:
+      - "senior-dev"
+    allow:
+      - dependency-type: "production"
