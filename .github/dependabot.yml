@@ -7,7 +7,6 @@ updates:
       interval: daily
       time: "05:00"
       timezone: "America/New_York"
-    versioning-strategy: increase
     open-pull-requests-limit: 15
     pull-request-branch-name:
       separator: "-"
@@ -36,7 +35,6 @@ updates:
       interval: daily
       time: "05:00"
       timezone: "America/New_York"
-    versioning-strategy: increase
     open-pull-requests-limit: 15
     pull-request-branch-name:
       separator: "-"
