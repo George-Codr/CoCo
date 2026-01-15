@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # ────────────────────────────────────────────────────────────────
       # Linux / Ubuntu dependencies (apt)
@@ -115,7 +115,7 @@ jobs:
       # Upload artifact
       # ────────────────────────────────────────────────────────────────
       - name: Upload executable
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: auth-${{ runner.os }}-${{ runner.arch }}
           path: build/auth${{ runner.os == 'Windows' && '.exe' || '' }}
