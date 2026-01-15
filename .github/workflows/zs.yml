@@ -61,7 +61,8 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           cd ${{ runner.workspace }}/vcpkg
-          ./vcpkg install --triplet x64-windows
+          .\vcpkg install boost openssl nlohmann-json --triplet x64-windows
+
 
       # ────────────────────────────────────────────────────────────────
       # CMake configure - platform-specific
